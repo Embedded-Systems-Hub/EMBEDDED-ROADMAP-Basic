@@ -1,0 +1,32 @@
+#include "stm32f4xx.h"
+
+/* Bit mask for enabling GPIOA (bit 0) */
+#define GPIOAEN (1U<<0)
+
+/* Bit mask for GPIOA pin 5 */
+#define PIN5 (1U<<5)
+
+/* Alias for PIN5 representing LED pin */
+#define LED_PIN PIN5
+
+int main(void)
+{
+	 /*Initialize LED*/
+	 led_init();
+	 /*Initialize Pushbutton*/
+	 button_init();
+	 while(1)
+	 {
+		 /*Get Pushbutton State*/
+		 btn_state = get_btn_state();
+
+		 if(btn_state)
+		 {
+			 led_on();
+		 }
+		 else
+		 {
+			 led_off();
+		 }
+	 }
+}

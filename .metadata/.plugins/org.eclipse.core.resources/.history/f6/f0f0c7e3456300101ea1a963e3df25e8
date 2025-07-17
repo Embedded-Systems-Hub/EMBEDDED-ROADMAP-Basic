@@ -1,0 +1,72 @@
+#include <stdlib.h>
+#include <string.h>
+#include "uart.h"
+
+#define MAX_CMD_LEN 64
+
+static uint32_t sampling_freq = 1;
+
+int main(void)
+{
+	uint8_t cmd_buffer[MAX_CMD_LEN];
+	uint32_t index = 0;
+
+	uart_init();  // Initialize UART peripheral
+	uart_print("Serial Command Interface ready!\r\n");
+
+	while(1)
+	{
+		/* Read one character from UART */
+		uint8_t ch = uart_rx();
+
+		if (ch == '\n' || ch == '\r')
+		{
+			/* Null-terminate the received command */
+			cmd_buffer[index] = '\0';
+
+			/* Handle "SET_FREQ <value>" command */
+			if (strncmp((const char *)cmd_buffer, "SET_FREQ ", 9) == 0)
+			{
+				int freq = atoi((const char *)&cmd_buffer[9]);  // Parse frequency value
+				if (freq > 0)
+				{
+					sampling_freq = freq;  // Update sampling frequency
+					uart_print("OK: Frequency set to ");
+					char num[10];
+					itoa(sampling_freq, num, 10);
+					uart_print(num);
+					uart_print(" Hz\n\r");
+				}
+				else
+				{
+					uart_print("ERROR: Invalid frequency\n");
+				}
+			}
+			/* Handle "GET_STATUS" command */
+			else if (strcmp((const char *)cmd_buffer, "GET_STATUS") == 0)
+			{
+				uart_print("STATUS OK, FREQ=");
+				char num[10];
+				itoa(sampling_freq, num, 10);
+				uart_print(num);
+				uart_print("\n\r");
+			}
+			/* Unknown command */
+			else
+			{
+				uart_print("ERROR: Unknown command\n\r");
+			}
+
+			index = 0;  // Reset buffer index after processing
+		}
+		else if (index < MAX_CMD_LEN - 1)
+		{
+			cmd_buffer[index++] = ch;  // Append character to command buffer
+		}
+		else
+		{
+			index = 0;  // Reset on overflow
+			uart_print("ERROR: Command too long\n\r");
+		}
+	}
+}
