@@ -6,6 +6,7 @@
 .settings/
 .loadpath
 *.launch
+.metadata/
 
 # Build artifacts
 *.o
