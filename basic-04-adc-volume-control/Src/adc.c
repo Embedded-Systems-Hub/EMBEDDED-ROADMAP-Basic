@@ -21,7 +21,13 @@ void adc1_ch1_init(void)
 	ADC1->CR2 |= (1U << 0);
 }
 
-void adc1_ch1_start_conversion(void)
+void adc1_ch1_single_conversion(void)
+{
+	/* Start ADC conversion */
+	ADC1->CR2 |= (1U << 30);
+}
+
+void adc1_ch1_start_continuous_conversion(void)
 {
 	/* Enable continuous conversion */
 	ADC1->CR2 |= (1U << 1);
