@@ -18,7 +18,7 @@ int main(void)
 	while(1)
 	{
 		adc1_ch1_single_conversion();
-		sensor_value = adc_read();
+		sensor_value = adc1_ch1_read();
 
 		char volume_str[100];
 		memset(volume_str, 0, sizeof(volume_str));

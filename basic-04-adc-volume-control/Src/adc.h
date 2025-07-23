@@ -7,6 +7,6 @@
 void adc1_ch1_init(void);
 void adc1_ch1_single_conversion(void);
 void adc1_ch1_start_continuous_conversion(void);
-uint32_t adc_read(void);
+uint32_t adc1_ch1_read(void);
 
 #endif /* ADC_H_ */
