@@ -74,6 +74,45 @@ Design and implement a **temperature monitoring subsystem** capable of:
 | TIM3  | Blinking frequency control |
 | TIM5  | 5-second log interval      |
 
+### Diagrams
+
+```mermaid
+flowchart LR
+
+    %% MAIN FLOW
+    main[main] --> init[uart_init<br>led_init<br>btn_init<br>btn_irq_init<br>temp_sensor_init]
+    init --> t5_start[tim5_start]
+    t5_start --> main_loop{trigger_log}
+    main_loop -->|true| handle_log[handle_log_task:<br>temp_sensor_read<br>adc_to_centi_celsius<br>evaluate_temperature<br>trigger_log = false<br>tim5_start]
+    handle_log --> main_loop
+    main_loop -->|false| main_loop
+
+    %% TIM2
+    tim2[TIM2 IRQ] --> tim2_expires{TIM2->SR & TIM_SR_UIF}
+    tim2_expires-->|true| stopt2[stop TIM2<br>debounce_in_progress = false]
+    tim2_expires-->|false| tim2_skip1[nothing]
+
+    %% TIM3
+    tim3[TIM3 IRQ] --> tim3_expires{TIM3->SR & TIM_SR_UIF}
+    tim3_expires -->|true| ledact[stop TIM3<br>toggle LED]
+    tim3_expires -->|false| tim3_skip1[nothing]
+    ledact --> isw{led_warn_active}
+    isw -->|true| stw[tim3_start WARN_MS]
+    isw -->|false| ise{led_error_active}
+    ise -->|true| ste[tim3_start ERROR_MS]
+    ise -->|false| loff[led_off]
+
+    %% TIM5
+    tim5[TIM5 IRQ] --> tim5_expires{TIM5->SR & TIM_SR_UIF}
+    tim5_expires -->|true| stopt5[stop TIM5<br>send_log_flag = true]
+    tim5_expires -->|false| tim5_skip1[nothing]
+
+    %% EXTI13
+    exti[EXTI13 IRQ] --> clear_exti --> chkdeb{debounce_in_progress}
+    chkdeb -->|true| skip1[nothing]
+    chkdeb -->|false| startdeb[debounce_in_progress = true<br>start TIM2 - 500ms<br>send_log_flag = true]
+```
+
 ---
 
 ## 🔧 Tools & Requirements
