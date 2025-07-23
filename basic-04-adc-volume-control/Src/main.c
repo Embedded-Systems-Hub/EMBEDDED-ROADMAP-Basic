@@ -13,11 +13,12 @@ int main(void)
 	uart_init();
 	uart_print("Simple audio system with adjustable volume ready!\r\n");
 
-	adc1_ch1_start_conversion();
+	//adc1_ch1_start_continuous_conversion();
 
 	while(1)
 	{
-		sensor_value = adc_read();
+		adc1_ch1_single_conversion();
+		sensor_value = adc1_ch1_read();
 
 		char volume_str[100];
 		memset(volume_str, 0, sizeof(volume_str));

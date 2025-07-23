@@ -43,3 +43,35 @@ uint32_t adc1_ch1_read(void)
 	/* Read converted value */
 	return (ADC1->DR);
 }
+
+// ADC1 ch16 -> temperature sensor
+void temp_sensor_init(void)
+{
+    /* Enable ADC1 clock */
+    RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
+
+    /* Enable temperature sensor and VREFINT */
+    ADC->CCR |= ADC_CCR_TSVREFE;
+
+    /* Configure ADC channel 16 (temperature sensor) */
+    ADC1->SQR3 = 16;				// Channel 16
+    ADC1->SMPR1 |= ADC_SMPR1_SMP16;	// Max sample time for stable reading
+
+    /* Enable ADC1 */
+    ADC1->CR2 |= ADC_CR2_ADON;
+
+    /* Delay for temperature sensor stabilization (>10us) */
+    for (volatile int i = 0; i < 10000; i++);
+}
+
+void temp_sensor_read(uint16_t *raw_adc)
+{
+	/* Start conversion */
+	ADC1->CR2 |= ADC_CR2_SWSTART;
+
+	/* Wait for conversion to complete */
+	while (!(ADC1->SR & ADC_SR_EOC));
+
+	/* Read ADC value */
+	*raw_adc = ADC1->DR;
+}

@@ -7,6 +7,9 @@
 void adc1_ch1_init(void);
 void adc1_ch1_single_conversion(void);
 void adc1_ch1_start_continuous_conversion(void);
-uint32_t adc1_ch1_read(void);
+uint32_t adc_read(void);
+
+void temp_sensor_init(void);
+void temp_sensor_read(uint16_t *raw_adc);
 
 #endif /* ADC_H_ */
