@@ -37,8 +37,9 @@ void uart_init(void)
 	RCC->APB1ENR |= UART2EN;
 
 	/* Configure UART baudrate */
-	uint32_t mantissa = APB1_CLK / (16U * UART2_BAUDRATE);
-	uint32_t fractional = mantissa % 16U;
+	uint32_t tmp = (APB1_CLK * 100) / (16U * UART2_BAUDRATE);
+	uint32_t mantissa = tmp / 100U;
+	uint32_t fractional = ((tmp - (mantissa * 100U)) * 16U) / 100U;
 	USART2->BRR = (mantissa << 4) | (fractional & 0x0F);
 
 	/* Configure transfer direction */
