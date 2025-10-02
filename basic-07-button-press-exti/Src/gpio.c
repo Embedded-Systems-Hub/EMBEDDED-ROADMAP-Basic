@@ -40,23 +40,7 @@ void btn_init(void)
 	/* Set PC13 mode to output mode */
 	GPIOC->MODER &= ~(1U << 26);
 	GPIOC->MODER &= ~(1U << 27);
-}
 
-bool btn_get_state(void)
-{
-	 /* Note : BTN is active low */
-	 if(GPIOC->IDR & BTN_PIN)
-	 {
-		 return false;
-	 }
-	 else
-	 {
-		 return true;
-	 }
-}
-
-void btn_irq_init(void)
-{
 	/* Disable global interrupts */
 	__disable_irq();
 
@@ -77,12 +61,15 @@ void btn_irq_init(void)
     __enable_irq();
 }
 
-bool btn_pressed(void)
+bool btn_get_state(void)
 {
-    if (button_pressed)
-    {
-        button_pressed = false;
-        return true;
-    }
-    return false;
+	 /* Note : BTN is active low */
+	 if(GPIOC->IDR & BTN_PIN)
+	 {
+		 return false;
+	 }
+	 else
+	 {
+		 return true;
+	 }
 }
