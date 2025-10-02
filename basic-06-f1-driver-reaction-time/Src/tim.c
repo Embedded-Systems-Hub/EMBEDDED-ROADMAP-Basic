@@ -51,12 +51,10 @@ bool tim2_go(void)
 void tim5_start(void)
 {
 	RCC->APB1ENR |= RCC_APB1ENR_TIM5EN;
-	TIM5->CR1 &= ~TIM_CR1_CEN;
 	TIM5->PSC = 16 - 1;
 	TIM5->ARR = 1000000 - 1;
 	TIM5->CR1 &= ~TIM_CR1_DIR;
 	TIM5->CNT = 0;
-	TIM5->SR  &= ~TIM_SR_UIF;
 	TIM5->CR1 |= TIM_CR1_CEN;
 }
 
